@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Chess Grandmaster - Production Edition</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;600;800&family=Cinzel:wght@500;700;900&display=swap" rel="stylesheet">
+    <!-- Chess.js Logic Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+
+    <style>
+        :root {
+            --font-main: 'Inter', sans-serif;
+            --bg-main: #0b0f19;
+            --bg-panel: #151d30;
+            --bg-darker: #090c15;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            --board-light: #f0d9b5;
+            --board-dark: #b58863;
+            --board-highlight: rgba(245, 158, 11, 0.4);
+            --board-valid: rgba(16, 185, 129, 0.5);
+            --board-valid-capture: rgba(239, 68, 68, 0.5);
+            --board-check: rgba(239, 68, 68, 0.8);
+            --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
+            --border-style: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Classic Theme - Warm Wood and Ivory */
+        .theme-classic {
+            --font-main: 'Cinzel', Georgia, serif;
+            --bg-main: #1c140e;
+            --bg-panel: rgba(43, 31, 20, 0.85);
+            --bg-darker: #130d09;
+            --text-main: #f5efe6;
+            --text-muted: #bda28a;
+            --accent: #c19a6b;
+            --accent-glow: rgba(193, 154, 107, 0.4);
+            --board-light: #eed9b3;
+            --board-dark: #b1855a;
+            --board-highlight: rgba(139, 90, 43, 0.5);
+            --board-valid: rgba(110, 139, 61, 0.5);
+            --board-valid-capture: rgba(165, 42, 42, 0.7);
+            --shadow-glow: 0 4px 20px rgba(0,0,0,0.6);
+            --border-style: 2px solid rgba(90, 62, 37, 0.6);
+        }
+
+        /* Dark Theme - Premium Slate and Indigo */
+        .theme-dark {
+            --font-main: 'Inter', sans-serif;
+            --bg-main: #090d16;
+            --bg-panel: rgba(17, 24, 39, 0.85);
+            --bg-darker: #030712;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.5);
+            --board-light: #e5e7eb;
+            --board-dark: #4b5563;
+            --board-highlight: rgba(99, 102, 241, 0.4);
+            --board-valid: rgba(34, 197, 94, 0.45);
+            --board-valid-capture: rgba(239, 68, 68, 0.5);
+            --shadow-glow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --border-style: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Futuristic Neon Theme - Glowing Cyan and Magenta */
+        .theme-futuristic {
+            --font-main: 'Orbitron', sans-serif;
+            --bg-main: #02020a;
+            --bg-panel: rgba(7, 7, 20, 0.85);
+            --bg-darker: #000002;
+            --text-main: #00ffff;
+            --text-muted: #78716c;
+            --accent: #ec4899;
+            --accent-glow: rgba(236, 72, 153, 0.7);
+            --board-light: #1e1e38;
+            --board-dark: #080815;
+            --board-highlight: rgba(236, 72, 153, 0.4);
+            --board-valid: rgba(0, 255, 255, 0.5);
+            --board-valid-capture: rgba(239, 68, 68, 0.6);
+            --board-check: rgba(255, 0, 128, 0.9);
+            --shadow-glow: 0 0 25px rgba(236, 72, 153, 0.6), 0 0 10px rgba(0, 255, 255, 0.4);
+            --border-style: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        /* Terminal Developer Theme - High Contrast Matrix Green */
+        .theme-terminal {
+            --font-main: 'Fira Code', monospace;
+            --bg-main: #000000;
+            --bg-panel: rgba(10, 10, 10, 0.9);
+            --bg-darker: #000000;
+            --text-main: #39ff14;
+            --text-muted: #1e8011;
+            --accent: #39ff14;
+            --accent-glow: rgba(57, 255, 20, 0.5);
+            --board-light: #0d260d;
+            --board-dark: #000000;
+            --board-highlight: rgba(57, 255, 20, 0.35);
+            --board-valid: rgba(57, 255, 20, 0.6);
+            --board-valid-capture: rgba(255, 0, 0, 0.65);
+            --board-check: rgba(255, 0, 0, 0.9);
+            --shadow-glow: 0 0 15px rgba(57, 255, 20, 0.4);
+            --border-style: 1px solid rgba(57, 255, 20, 0.5);
+        }
+
+        /* Global styles */
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .panel-bg {
+            background-color: var(--bg-panel);
+            border: var(--border-style);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .border-theme {
+            border: var(--border-style);
+        }
+
+        .text-accent {
+            color: var(--accent);
+        }
+
+        .bg-accent {
+            background-color: var(--accent);
+        }
+
+        /* Chess Board Styles */
+        .chess-board {
+            box-shadow: var(--shadow-glow);
+            border-radius: 8px;
+            overflow: hidden;
+            border: var(--border-style);
+        }
+
+        .square-light {
+            background-color: var(--board-light);
+        }
+
+        .square-dark {
+            background-color: var(--board-dark);
+        }
+
+        .square {
+            position: relative;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        /* Highlights & Indicators */
+        .square.selected {
+            background-color: var(--board-highlight) !important;
+            box-shadow: inset 0 0 12px var(--accent);
+        }
+
+        .square.check {
+            background-color: var(--board-check) !important;
+            animation: pulse-danger 1.5s infinite;
+        }
+
+        .valid-dot {
+            width: 25%;
+            height: 25%;
+            background-color: var(--board-valid);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: scale-up 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .valid-capture {
+            width: 85%;
+            height: 85%;
+            border: 3px solid var(--board-valid-capture);
+            border-radius: 50%;
+            pointer-events: none;
+            position: absolute;
+            animation: scale-up 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .last-move-highlight {
+            box-shadow: inset 0 0 10px rgba(245, 158, 11, 0.6);
+        }
+
+        /* Piece Drag/Drop styles */
+        .chess-piece {
+            width: 85%;
+            height: 85%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
+        }
+
+        .chess-piece:hover {
+            transform: scale(1.1);
+        }
+
+        .chess-piece.dragging {
+            opacity: 0.3;
+            transform: scale(1.15);
+        }
+
+        /* Scrollbar aesthetics */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.15);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* Evaluation Bar Styling */
+        .eval-bar-container {
+            width: 14px;
+            height: 100%;
+            background-color: #1e293b;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            border: var(--border-style);
+        }
+
+        .eval-bar-fill {
+            width: 100%;
+            background-color: #f8fafc;
+            position: absolute;
+            bottom: 0;
+            transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Animations */
+        @keyframes scale-up {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse-danger {
+            0%, 100% { opacity: 1; }
+            50% { background-color: rgba(239, 68, 68, 0.4) !important; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 2px var(--accent)); }
+            50% { filter: drop-shadow(0 0 10px var(--accent)); }
+        }
+
+        .neon-glowing {
+            animation: pulse-glow 2s infinite;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .toast {
+            background-color: var(--bg-panel);
+            color: var(--text-main);
+            border: var(--border-style);
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-glow);
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            pointer-events: auto;
+        }
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        /* Confetti */
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent);
+            opacity: 0;
+            z-index: 40;
+            pointer-events: none;
+        }
+        @keyframes confetti-fall {
+            0% { opacity: 1; transform: translateY(-100vh) rotate(0deg); }
+            100% { opacity: 1; transform: translateY(100vh) rotate(720deg); }
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col antialiased theme-dark transition-all duration-300">
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Navigation / Header -->
+    <header class="panel-bg border-b px-4 py-3 flex items-center justify-between z-20 shadow-md">
+        <div class="flex items-center gap-3">
+            <button id="hamburger-btn" class="text-xl p-2 hover:bg-slate-800/50 rounded-lg md:hidden text-accent transition-colors">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-chess-knight text-2xl text-accent animate-pulse"></i>
+                <h1 class="text-lg md:text-xl font-bold tracking-wider uppercase">Gemini Chess <span class="text-xs text-accent uppercase font-bold border border-theme px-1.5 py-0.5 rounded ml-1 bg-accent/10">v3.0 Live</span></h1>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <!-- Theme Selection -->
+            <div class="relative hidden sm:flex items-center gap-1.5 panel-bg p-1 rounded-full border-theme">
+                <button onclick="setTheme('classic')" class="theme-btn px-3 py-1 text-xs rounded-full transition-all hover:bg-slate-700/50" data-theme="classic">Classic</button>
+                <button onclick="setTheme('dark')" class="theme-btn px-3 py-1 text-xs rounded-full transition-all hover:bg-slate-700/50" data-theme="dark">Dark</button>
+                <button onclick="setTheme('futuristic')" class="theme-btn px-3 py-1 text-xs rounded-full transition-all hover:bg-slate-700/50" data-theme="futuristic">Neon</button>
+                <button onclick="setTheme('terminal')" class="theme-btn px-3 py-1 text-xs rounded-full transition-all hover:bg-slate-700/50" data-theme="terminal">Terminal</button>
+            </div>
+
+            <!-- Current Mode Badges -->
+            <div class="flex items-center gap-2">
+                <span id="current-mode-badge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-accent/20 border-theme text-accent">
+                    LOCAL P&P
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden relative">
+
+        <!-- Mobile Drawer Sidebar (Theme / Setup controls) -->
+        <div id="drawer" class="fixed inset-y-0 left-0 w-64 z-30 panel-bg border-r p-5 transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:relative md:flex md:flex-col md:w-80 shadow-2xl">
+            <div class="flex items-center justify-between mb-6 md:hidden">
+                <span class="font-bold uppercase tracking-wider text-accent text-sm">Control Deck</span>
+                <button id="drawer-close-btn" class="p-1 hover:bg-slate-800 rounded">
+                    <i class="fa-solid fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Game Settings & Mode Toggle -->
+            <div class="flex-1 overflow-y-auto space-y-5 pr-1 text-xs">
+                <div>
+                    <h3 class="text-xs uppercase font-bold text-accent tracking-widest mb-2"><i class="fa-solid fa-gamepad mr-1.5"></i> Game Mode</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="mode-local-btn" class="py-2.5 px-3 rounded-lg text-xs font-bold border border-theme transition-all bg-accent/20 border-accent text-accent" onclick="changeGameMode('LOCAL')">
+                            <i class="fa-solid fa-users mb-1 text-lg block"></i> Pass & Play
+                        </button>
+                        <button id="mode-llm-btn" class="py-2.5 px-3 rounded-lg text-xs font-bold border border-theme transition-all hover:border-accent hover:text-accent opacity-75" onclick="changeGameMode('LLM')">
+                            <i class="fa-solid fa-brain mb-1 text-lg block"></i> Gemini AI
+                        </button>
+                    </div>
+                </div>
+
+                <!-- LLM Setup (Visible in AI Mode) -->
+                <div id="llm-config-panel" class="hidden transition-all duration-300 space-y-4 bg-slate-900/40 p-3 rounded-lg border border-theme">
+                    <div>
+                        <h3 class="text-[10px] uppercase font-bold text-accent tracking-widest mb-1"><i class="fa-solid fa-microchip mr-1.5"></i> AI Engine Model</h3>
+                        <select id="api-model-select" class="w-full text-[11px] py-1.5 px-2 rounded panel-bg border-theme focus:outline-none focus:border-accent text-main">
+                            <option value="gemini-3-flash-preview" selected>Gemini 3.0 Flash</option>
+                            <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                            <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                        </select>
+                    </div>
+                    <div>
+                        <h3 class="text-[10px] uppercase font-bold text-accent tracking-widest mb-2"><i class="fa-solid fa-shield-halved mr-1.5"></i> Gemini Difficulty</h3>
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button id="diff-easy" class="py-1.5 rounded text-[10px] font-bold border border-theme bg-slate-800 hover:border-emerald-500 hover:text-emerald-500" onclick="setDifficulty('easy')">Easy</button>
+                            <button id="diff-medium" class="py-1.5 rounded text-[10px] font-bold border border-theme bg-emerald-500/10 border-emerald-500 text-emerald-400" onclick="setDifficulty('medium')">Medium</button>
+                            <button id="diff-hard" class="py-1.5 rounded text-[10px] font-bold border border-theme bg-slate-800 hover:border-rose-500 hover:text-rose-500" onclick="setDifficulty('hard')">Hard</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-[10px] uppercase font-bold text-accent tracking-widest mb-1"><i class="fa-solid fa-key mr-1.5"></i> Gemini API Key</h3>
+                        <p class="text-[9px] text-muted mb-1.5">Leave blank to use pre-authorized sandbox keys.</p>
+                        <div class="relative">
+                            <input id="api-key-input" type="password" placeholder="Using Authorized Canvas Key" class="w-full text-xs py-2 px-3 rounded-lg panel-bg border-theme focus:outline-none focus:border-accent text-main placeholder-muted" />
+                            <i class="fa-solid fa-lock absolute right-3 top-2.5 text-[10px] text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timer Settings -->
+                <div>
+                    <h3 class="text-xs uppercase font-bold text-accent tracking-widest mb-2"><i class="fa-solid fa-clock-rotate-left mr-1.5"></i> Clock Setup</h3>
+                    <div class="grid grid-cols-4 gap-1.5 mb-2">
+                        <button class="time-btn py-1 px-1 text-[10px] font-bold rounded border border-theme bg-slate-800 hover:border-accent" onclick="setTimerOption(60, 0)">1m</button>
+                        <button class="time-btn py-1 px-1 text-[10px] font-bold rounded border border-theme bg-slate-800 hover:border-accent" onclick="setTimerOption(300, 0)">5m</button>
+                        <button class="time-btn py-1 px-1 text-[10px] font-bold rounded border border-theme bg-accent/20 border-accent text-accent" onclick="setTimerOption(600, 0)">10m</button>
+                        <button class="time-btn py-1 px-1 text-[10px] font-bold rounded border border-theme bg-slate-800 hover:border-accent" onclick="setTimerOption(600, 5)">10+5</button>
+                    </div>
+                    <div class="text-[10px] text-muted text-right">
+                        Selected: <span id="selected-clock-label" class="text-accent font-bold">10 mins + 0s increment</span>
+                    </div>
+                </div>
+
+                <!-- Custom Sound Toggles -->
+                <div>
+                    <h3 class="text-xs uppercase font-bold text-accent tracking-widest mb-2"><i class="fa-solid fa-sliders mr-1.5"></i> Preferences</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-2 rounded bg-slate-900/40 border border-theme">
+                            <span class="text-[10px] text-muted">Interactive Sound FX</span>
+                            <input id="sound-toggle" type="checkbox" checked class="w-4 h-4 text-accent bg-slate-900 border-theme rounded focus:ring-accent" />
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded bg-slate-900/40 border border-theme">
+                            <span class="text-[10px] text-muted">Animations & Glow</span>
+                            <input id="animation-toggle" type="checkbox" checked class="w-4 h-4 text-accent bg-slate-900 border-theme rounded focus:ring-accent" onchange="toggleAnimations(this.checked)" />
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded bg-slate-900/40 border border-theme">
+                            <span class="text-[10px] text-muted">Spectator Mode (AI vs AI)</span>
+                            <input id="spectator-toggle" type="checkbox" class="w-4 h-4 text-accent bg-slate-900 border-theme rounded focus:ring-accent" onchange="toggleSpectatorMode(this.checked)" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Board Rotation -->
+                <div>
+                    <h3 class="text-xs uppercase font-bold text-accent tracking-widest mb-2"><i class="fa-solid fa-arrows-spin mr-1.5"></i> View Direction</h3>
+                    <button class="w-full py-2 px-3 rounded-lg text-xs font-bold border border-theme bg-slate-800 hover:bg-slate-700 transition-all flex items-center justify-center gap-2" onclick="flipBoard()">
+                        <i class="fa-solid fa-retweet"></i> Flip Board View
+                    </button>
+                </div>
+
+                <!-- Custom Position FEN Input -->
+                <div class="bg-slate-900/30 p-2.5 rounded-lg border border-theme space-y-2">
+                    <h3 class="text-[10px] uppercase font-bold text-accent tracking-widest flex justify-between">
+                        <span><i class="fa-solid fa-paste mr-1"></i> FEN Importer</span>
+                        <button class="text-accent hover:text-white" onclick="loadRandomChallenge()" title="Random Tactics Challenge"><i class="fa-solid fa-dice"></i></button>
+                    </h3>
+                    <div class="flex gap-1">
+                        <input id="fen-import-input" type="text" placeholder="Paste FEN string here" class="flex-1 text-[10px] py-1.5 px-2 rounded panel-bg border-theme text-main focus:outline-none focus:border-accent" />
+                        <button class="px-2.5 py-1.5 rounded bg-accent/20 hover:bg-accent text-accent hover:text-slate-900 font-bold transition-all text-[10px]" onclick="importFenPosition()">Load</button>
+                    </div>
+                    <div class="flex gap-1.5 justify-between">
+                        <button class="text-[9px] hover:text-accent transition-colors" onclick="copyCurrentFen()"><i class="data-lucide="copy" mr-1"></i> Copy FEN</button>
+                        <button class="text-[9px] hover:text-accent transition-colors" onclick="copyCurrentPgn()"><i class="fa-solid fa-file-export mr-1"></i> Copy PGN</button>
+                    </div>
+                </div>
+
+                <!-- Captured Material Dashboard -->
+                <div class="border-theme border-t pt-3">
+                    <h3 class="text-xs uppercase font-bold text-accent tracking-widest mb-2"><i class="fa-solid fa-list-check mr-1.5"></i> Advantage Panel</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-2 rounded bg-slate-900/40 border-theme">
+                            <span class="text-[10px] text-muted">White Slain:</span>
+                            <div id="white-captured" class="flex flex-wrap gap-0.5 text-xs font-semibold"></div>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded bg-slate-900/40 border-theme">
+                            <span class="text-[10px] text-muted">Black Slain:</span>
+                            <div id="black-captured" class="flex flex-wrap gap-0.5 text-xs font-semibold"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clear Action Center at Bottom -->
+            <div class="border-t border-theme pt-3 mt-auto space-y-2">
+                <button class="w-full py-2 px-3 rounded-lg text-xs font-bold text-slate-900 bg-emerald-400 hover:bg-emerald-500 transition-all flex items-center justify-center gap-2 shadow" onclick="startNewGame()">
+                    <i class="fa-solid fa-play"></i> Restart Match
+                </button>
+            </div>
+        </div>
+
+        <!-- Center Game Space -->
+        <main class="flex-1 flex flex-col items-center justify-center p-3 md:p-5 overflow-y-auto">
+            <div class="w-full max-w-[620px] flex flex-col gap-3">
+
+                <!-- Time Machine Warning Banner -->
+                <div id="time-machine-banner" class="hidden bg-amber-500/15 border border-amber-500/50 p-2 rounded-lg flex items-center justify-between text-xs text-amber-300">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left animate-spin text-sm"></i>
+                        <span>Viewing historical state. Move execution paused.</span>
+                    </div>
+                    <button class="px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-bold hover:bg-amber-400 transition-colors" onclick="resumeGameToCurrent()">Resume</button>
+                </div>
+
+                <!-- Top Opponent Banner (Black Player) -->
+                <div class="panel-bg p-3 rounded-lg flex items-center justify-between border-theme shadow-sm">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center bg-slate-800 text-slate-100 border-theme">
+                            <i class="fa-solid fa-robot text-lg text-accent" id="black-player-icon"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-xs md:text-sm tracking-wide text-accent" id="black-player-name">Gemini 2.5 Flash</h2>
+                            <p class="text-[9px] text-muted uppercase tracking-wider" id="black-player-meta">AI Engine Thinking...</p>
+                        </div>
+                    </div>
+                    <!-- Captured score and Timer -->
+                    <div class="flex items-center gap-2.5">
+                        <span id="black-material-advantage" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400"></span>
+                        <div class="text-base md:text-lg font-mono font-extrabold tracking-wider bg-slate-950 px-2.5 py-1 rounded border border-theme flex items-center gap-1.5" id="timer-black">
+                            10:00
+                        </div>
+                    </div>
+                </div>
+
+                <!-- The Interactive Board Container -->
+                <div class="flex gap-3 items-stretch">
+                    <!-- Dynamic Live Evaluation Bar -->
+                    <div class="flex flex-col items-center py-1">
+                        <div class="eval-bar-container h-full shadow-lg">
+                            <div id="eval-bar-fill" class="eval-bar-fill" style="height: 50%;"></div>
+                        </div>
+                        <span id="eval-label" class="text-[8px] text-muted mt-1 font-mono font-bold">0.0</span>
+                    </div>
+
+                    <div class="relative flex-1 aspect-square bg-slate-900 rounded-lg overflow-hidden flex shadow-2xl">
+                        <!-- Loading overlay for Gemini Thinking -->
+                        <div id="loading-overlay" class="absolute inset-0 bg-slate-950/90 z-40 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+                            <div class="relative flex items-center justify-center mb-4">
+                                <div class="animate-ping absolute inline-flex h-12 w-12 rounded-full bg-accent opacity-75"></div>
+                                <div class="relative rounded-full p-4 bg-slate-900 border border-theme text-accent text-3xl">
+                                    <i class="fa-solid fa-brain"></i>
+                                </div>
+                            </div>
+                            <h4 class="text-sm font-bold uppercase tracking-wider text-accent mb-1 animate-pulse">Gemini Grandmaster Thinking</h4>
+                            <p id="gemini-thinking-status" class="text-xs text-muted">Analyzing current chess matrix...</p>
+                        </div>
+
+                        <!-- Visual Grid of squares -->
+                        <div id="board-grid" class="chess-board w-full h-full grid grid-cols-8 grid-rows-8">
+                            <!-- Dynamic generated from JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Opponent Banner (White Player) -->
+                <div class="panel-bg p-3 rounded-lg flex items-center justify-between border-theme shadow-sm">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center bg-slate-100 text-slate-900 border-theme font-bold text-sm">
+                            H
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-xs md:text-sm tracking-wide text-accent" id="white-player-name">Human Opponent</h2>
+                            <p class="text-[9px] text-muted uppercase tracking-wider">White Team Player</p>
+                        </div>
+                    </div>
+                    <!-- Captured score and Timer -->
+                    <div class="flex items-center gap-2.5">
+                        <span id="white-material-advantage" class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400"></span>
+                        <div class="text-base md:text-lg font-mono font-extrabold tracking-wider bg-slate-950 px-2.5 py-1 rounded border border-theme flex items-center gap-1.5" id="timer-white">
+                            10:00
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Standard Game Controls -->
+                <div class="panel-bg p-2.5 rounded-lg flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-theme">
+                    <div class="flex items-center gap-2">
+                        <button class="flex-1 sm:flex-none px-3.5 py-1.5 rounded-md hover:bg-slate-800 text-xs transition-all border border-theme hover:border-slate-500 hover:text-accent" onclick="undoMove()" title="Undo Move">
+                            <i class="fa-solid fa-arrow-rotate-left mr-1.5"></i> Undo
+                        </button>
+                        <button class="flex-1 sm:flex-none px-3.5 py-1.5 rounded-md hover:bg-slate-800 text-xs transition-all border border-theme hover:border-slate-500 hover:text-accent" onclick="redoMove()" title="Redo Move">
+                            <i class="fa-solid fa-arrow-rotate-right mr-1.5"></i> Redo
+                        </button>
+                        <button class="flex-1 sm:flex-none px-3.5 py-1.5 rounded-md hover:bg-slate-800 text-xs transition-all border border-theme hover:border-slate-500 hover:text-rose-500" onclick="resignGame()" title="Resign Match">
+                            <i class="fa-solid fa-flag mr-1.5"></i> Resign
+                        </button>
+                        <button id="coach-prompt-btn" class="px-3 py-1.5 rounded-md bg-accent/20 hover:bg-accent hover:text-slate-950 text-accent font-semibold text-xs border border-accent/30 flex items-center gap-1 transition-all" onclick="openCoachModal()">
+                            <i class="fa-solid fa-graduation-cap"></i> AI Coach
+                        </button>
+                        <button class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-emerald-600 text-emerald-400 hover:text-white font-semibold text-xs border border-theme transition-all" onclick="provideHint()" title="Suggest a move">
+                            <i class="fa-solid fa-lightbulb"></i> Hint
+                        </button>
+                    </div>
+
+                    <!-- Keyboard input Command Line -->
+                    <div class="flex items-center gap-1.5 border border-theme bg-slate-950/50 rounded px-2 py-1 flex-1 max-w-[150px] lg:max-w-[200px]">
+                        <span class="text-[10px] text-muted font-mono uppercase tracking-widest">Cmd:</span>
+                        <input id="keyboard-move-input" type="text" placeholder="e2e4..." class="w-full bg-transparent text-[11px] text-accent focus:outline-none font-mono" onkeydown="handleCommandLineKey(event)" />
+                    </div>
+
+                    <div class="text-xs text-muted text-right flex items-center gap-1 justify-end">
+                        Turn: <span id="current-turn-indicator" class="font-bold px-1.5 py-0.5 rounded bg-accent/20 text-accent uppercase">White</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Column Panel: Interactive history and thought stream -->
+        <aside class="hidden xl:flex flex-col w-80 panel-bg border-l p-4 shadow-inner">
+            <h3 class="text-xs uppercase font-bold text-accent tracking-widest mb-3"><i class="fa-solid fa-brain"></i> Interactive Control deck</h3>
+            
+            <!-- Tab selector -->
+            <div class="flex border-b border-theme mb-3">
+                <button id="tab-history-btn" class="flex-1 py-1.5 text-center text-xs font-bold border-b-2 border-accent text-accent" onclick="switchRightTab('history')">Notation History</button>
+                <button id="tab-log-btn" class="flex-1 py-1.5 text-center text-xs font-bold text-muted hover:text-main" onclick="switchRightTab('logs')">Engine Neural Log</button>
+            </div>
+
+            <!-- TAB 1: Notation History & time travel -->
+            <div id="tab-history-content" class="flex-1 flex flex-col min-h-0 space-y-2">
+                <p class="text-[10px] text-muted italic mb-1"><i class="fa-solid fa-circle-info mr-1"></i> Click any move below to Travel Back in time and explore past states.</p>
+                <div class="flex-1 flex flex-col min-h-0 bg-slate-950/40 border border-theme rounded-lg p-3 overflow-hidden">
+                    <div id="history-box" class="flex-1 overflow-y-auto text-xs grid grid-cols-2 gap-x-3 gap-y-1 align-content-start pr-1 font-mono">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: Neural Log Thought Bubble -->
+            <div id="tab-log-content" class="hidden flex-1 flex flex-col min-h-0 bg-slate-950/40 border border-theme rounded-lg p-3 overflow-hidden">
+                <div id="ai-thought-box" class="text-xs leading-relaxed overflow-y-auto flex-1 space-y-3 text-muted pr-1">
+                    <div class="text-accent italic text-[11px]"><i class="fa-solid fa-shield mr-1"></i> Match initiated. Sandbox AI models loaded. Play chess by selecting pieces or switching modes.</div>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-3 rounded-lg border border-theme bg-slate-900/30 text-[10px] leading-relaxed text-muted flex items-start gap-2.5">
+                <i class="fa-solid fa-circle-info mt-0.5 text-accent"></i>
+                <span>Type standard algebraic moves into the command input line or slide pieces directly onto desired square vectors.</span>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Dialog Modals -->
+    <!-- Interactive Coach Modal -->
+    <div id="coach-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+        <div class="panel-bg p-6 rounded-xl border border-theme shadow-2xl max-w-lg w-full mx-4 flex flex-col max-h-[85vh]">
+            <div class="flex items-center justify-between border-b border-theme pb-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <div class="p-2 bg-accent/20 rounded text-accent text-lg"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <div>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-accent">Gemini grandmaster Tactics Coach</h3>
+                        <p class="text-[9px] text-muted">Analysis requested on live board state</p>
+                    </div>
+                </div>
+                <button class="p-1 hover:bg-slate-800 rounded text-muted hover:text-main transition-colors" onclick="closeCoachModal()">
+                    <i class="fa-solid fa-times text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div id="coach-content" class="flex-1 overflow-y-auto text-xs leading-relaxed space-y-3 pr-1 text-muted">
+                <!-- Dynamic markdown content filled by Gemini Prompt -->
+                <div class="flex flex-col items-center justify-center py-10 space-y-3">
+                    <div class="animate-spin text-3xl text-accent"><i class="fa-solid fa-circle-notch"></i></div>
+                    <p class="text-center text-muted text-[11px]">Preparing tactical query matrix...</p>
+                </div>
+            </div>
+
+            <!-- Audio Text to Speech controls -->
+            <div class="border-t border-theme pt-3 mt-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <input id="tts-coach-toggle" type="checkbox" checked class="w-4 h-4 text-accent bg-slate-900 border-theme rounded" />
+                    <label for="tts-coach-toggle" class="text-[10px] text-muted">Auto Speak Analysis Voice</label>
+                </div>
+                <button class="px-4 py-2 rounded bg-accent text-slate-900 font-bold text-xs uppercase hover:bg-accent/80 transition-colors" onclick="closeCoachModal()">Got It</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promotion Selection Modal -->
+    <div id="promotion-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+        <div class="panel-bg p-6 rounded-xl border border-theme shadow-2xl max-w-sm w-full mx-4 text-center">
+            <h3 class="text-lg font-bold text-accent mb-4 uppercase tracking-wider"><i class="fa-solid fa-chess-queen mr-1.5"></i> Pawn Promotion</h3>
+            <p class="text-xs text-muted mb-5">Select a powerful chess structure to promote your pawn:</p>
+            <div class="grid grid-cols-4 gap-3">
+                <button onclick="selectPromotionPiece('q')" class="py-3 rounded bg-slate-800 border border-theme hover:border-accent hover:text-accent transition-all text-2xl" title="Queen">♕</button>
+                <button onclick="selectPromotionPiece('r')" class="py-3 rounded bg-slate-800 border border-theme hover:border-accent hover:text-accent transition-all text-2xl" title="Rook">♖</button>
+                <button onclick="selectPromotionPiece('b')" class="py-3 rounded bg-slate-800 border border-theme hover:border-accent hover:text-accent transition-all text-2xl" title="Bishop">♗</button>
+                <button onclick="selectPromotionPiece('n')" class="py-3 rounded bg-slate-800 border border-theme hover:border-accent hover:text-accent transition-all text-2xl" title="Knight">♘</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner Overlay Modal for Game Over -->
+    <div id="game-over-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+        <div class="panel-bg p-8 rounded-xl border border-theme shadow-2xl max-w-md w-full mx-4 text-center">
+            <div class="w-16 h-16 rounded-full bg-accent/20 text-accent flex items-center justify-center text-3xl mx-auto mb-4 animate-bounce">
+                <i class="fa-solid fa-trophy" id="game-over-icon"></i>
+            </div>
+            <h3 class="text-2xl font-bold tracking-wider text-accent uppercase mb-2" id="game-over-title">Checkmate</h3>
+            <p class="text-sm text-main mb-6" id="game-over-message">White team won the chess match!</p>
+            <div class="flex items-center gap-3 justify-center">
+                <button class="px-5 py-2.5 rounded bg-accent hover:bg-accent/80 text-white font-bold text-xs uppercase" onclick="restartMatch()">Restart</button>
+                <button class="px-5 py-2.5 rounded border border-theme text-muted hover:text-main text-xs uppercase" onclick="hideGameOverModal()">Dismiss</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Application Logic Script -->
+    <script>
+        // Game Engine and Layout variables
+        let game = new Chess();
+        let boardGrid = document.getElementById('board-grid');
+        let selectedSquare = null;
+        let legalMoves = [];
+        let playerColor = 'w'; // Default player as White
+        let mode = 'LOCAL'; // LOCAL or LLM
+        let difficulty = 'medium'; // easy, medium, hard
+        let activeTheme = 'dark';
+        let isFlipped = false;
+        
+        // Timers and Match states
+        let timeRemaining = { w: 600, b: 600 }; 
+        let chosenTimerOption = 600;
+        let incrementValue = 0; // Increment addition per move
+        let timerInterval = null;
+        let historyArray = [];
+        let historyFenList = [game.fen()]; // List tracking exact fen steps
+        let historyViewIndex = 0; // Time machine traveler index
+        let captured = { w: [], b: [] };
+        let redoStack = [];
+        let lastMoveSquares = null;
+
+        // Real Gemini API Connection & Configuration
+        const MODEL_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent";
+
+        // Piece Vector Design Map (Theme Styled SVGs for Crisp High DPI)
+        const piecesSvgMap = {
+            'p': {
+                'w': `<svg viewBox="0 0 45 45" class="w-full h-full"><path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-.83.62-1.41 1.61-1.41 2.72v4h11v-4c0-1.11-.58-2.1-1.41-2.72 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="currentColor" stroke="#000" stroke-width="1.5"/></svg>`,
+                'b': `<svg viewBox="0 0 45 45" class="w-full h-full"><path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-.83.62-1.41 1.61-1.41 2.72v4h11v-4c0-1.11-.58-2.1-1.41-2.72 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="currentColor" stroke="#fff" stroke-width="1.5"/></svg>`
+            },
+            'r': {
+                'w': `<svg viewBox="0 0 45 45" class="w-full h-full"><path d="M9 39h27v-3H9v3zm3-3h21v-4H12v4zm2.25-4h16.5l1.25-17.5h-19L14.25 31zM15 11.5V14h3v-2.5h3V14h3v-2.5h3V14h3v-2.5h3V14h3v-2.5h3V9H9v2.5h6z" fill="currentColor" stroke="#000" stroke-width="1.5"/></svg>`,
+                'b': `<svg viewBox="0 0 45 45" class="w-full h-full"><path d="M9 39h27v-3H9v3zm3-3h21v-4H12v4zm2.25-4h16.5l1.25-17.5h-19L14.25 31zM15 11.5V14h3v-2.5h3V14h3v-2.5h3V14h3v-2.5h3V14h3v-2.5h3V9H9v2.5h6z" fill="currentColor" stroke="#fff" stroke-width="1.5"/></svg>`
+            },
+            'n': {
+                'w': `<svg viewBox="0 0 45 45" class="w-full h-full"><path d="M22 10c-5 0-8 3-10 8.5C11 22 11.5 25 13 27c1.5 2 4 3.5 5 2 .5-.8.5-2 .5-3 0-1.5-.5-3-.5-4.5 1 1.5 2.5 3 4.5 3.5 1 .3 2 0 2.5-.5s.5-1.5.5-2.5c0-1.5-1-3-2-4 1.5 1.5 3.5 2 5.5 2 2.5 0 4.5-2.5 4.5-5 0-3-2-6-4-7-1.5-.8-3-1-5-1zm-3 26h13v-3H19v3z" fill="currentColor" stroke="#000" stroke-width="1.5"/></svg>`,
+                'b': `<svg viewBox="0 0 45 45" class="w-full h-full"><path d="M22 10c-5 0-8 3-10 8.5C11 22 11.5 25 13 27c1.5 2 4 3.5 5 2 .5-.8.5-2 .5-3 0-1.5-.5-3-.5-4.5 1 1.5 2.5 3 4.5 3.5 1 .3 2 0 2.5-.5s.5-1.5.5-2.5c0-1.5-1-3-2-4 1.5 1.5 3.5 2 5.5 2 2.5 0 4.5-2.5 4.5-5 0-3-2-6-4-7-1.5-.8-3-1-5-1zm-3 26h13v-3H19v3z" fill="currentColor" stroke="#fff" stroke-width="1.5"/></svg>`
+            },
+            'b': {
+                'w': `<svg viewBox="0 0 45 45" class="w-full h-full"><path d="M9 36c3.39 0 7.66-.69 11.77-2.3 4 1.51 8 2.3 11.23 2.3 3.1 0 5-1.9 5-5 0-3.1-1.9-5-5-5-2.58 0-5.84.58-9.23 1.77C20.5 19.34 18.25 14 18.25 9c0-1.11-.9-2-2-2s-2 .89-2 2c0 5 2.25 10.34 4.52 18.77C14.84 26.58 11.58 26 9 26c-3.1 0-5 1.9-5 5 0 3.1 1.9 5 5 5z" fill="currentColor" stroke="#000" stroke-width="1.5"/></svg>`,
+                'b': `<svg viewBox="0 0 45 45" class="w-full h-full"><path d="M9 36c3.39 0 7.66-.69 11.77-2.3 4 1.51 8 2.3 11.23 2.3 3.1 0 5-1.9 5-5 0-3.1-1.9-5-5-5-2.58 0-5.84.58-9.23 1.77C20.5 19.34 18.25 14 18.25 9c0-1.11-.9-2-2-2s-2 .89-2 2c0 5 2.25 10.34 4.52 18.77C14.84 26.58 11.58 26 9 26c-3.1 0-5 1.9-5 5 0 3.1 1.9 5 5 5z" fill="currentColor" stroke="#fff" stroke-width="1.5"/></svg>`
+            },
+            'q': {
+                'w': `<svg viewBox="0 0 45 45" class="w-full h-full"><path d="M8 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm32 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-16-4a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM9 37h27v-3H9v3zm1.5-6h24l2.25-15.5H29l-6.5 10-6.5-10H8.25L10.5 31z" fill="currentColor" stroke="#000" stroke-width="1.5"/></svg>`,
+                'b': `<svg viewBox="0 0 45 45" class="w-full h-full"><path d="M8 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm32 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-16-4a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM9 37h27v-3H9v3zm1.5-6h24l2.25-15.5H29l-6.5 10-6.5-10H8.25L10.5 31z" fill="currentColor" stroke="#fff" stroke-width="1.5"/></svg>`
+            },
+            'k': {
+                'w': `<svg viewBox="0 0 45 45" class="w-full h-full"><path d="M22.5 6V3m-3 3h6m-3 5.5V14h3v-2.5h3V14h3v-2.5h3V14h3v-2.5h3V9H9v2.5h6zm-8 25.5h31.5v-4H14.5v4zm3.75-4h24L36 17.5H9L18.25 31z" fill="currentColor" stroke="#000" stroke-width="1.5"/></svg>`,
+                'b': `<svg viewBox="0 0 45 45" class="w-full h-full"><path d="M22.5 6V3m-3 3h6m-3 5.5V14h3v-2.5h3V14h3v-2.5h3V14h3v-2.5h3V9H9v2.5h6zm-8 25.5h31.5v-4H14.5v4zm3.75-4h24L36 17.5H9L18.25 31z" fill="currentColor" stroke="#fff" stroke-width="1.5"/></svg>`
+            }
+        };
+
+        const showToast = (message, icon = 'fa-info-circle') => {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fa-solid ${icon} text-accent text-lg"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        };
+
+        const playSound = (type) => {
+            if (!document.getElementById('sound-toggle').checked) return;
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'move') {
+                    osc.frequency.setValueAtTime(450, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.12);
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.12);
+                } else if (type === 'capture') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(140, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(380, ctx.currentTime + 0.18);
+                    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.18);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.18);
+                } else if (type === 'check') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(240, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.3);
+                }
+            } catch (e) {
+                console.debug("Audio Context failed: ", e);
+            }
+        };
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        const getPieceColor = (color) => {
+            if (activeTheme === 'futuristic') {
+                return color === 'w' ? '#00ffff' : '#ec4899';
+            } else if (activeTheme === 'terminal') {
+                return '#39ff14';
+            } else if (activeTheme === 'classic') {
+                return color === 'w' ? '#f5efe6' : '#2b1f14';
+            }
+            return color === 'w' ? '#ffffff' : '#1e293b';
+        };
+
+        function renderBoard() {
+            boardGrid.innerHTML = '';
+            
+            // Draw according to the dynamic FEN selected by Time Machine or Current turn
+            const displayFen = historyFenList[historyViewIndex];
+            const tempGame = new Chess(displayFen);
+            const activeCheckSquare = tempGame.in_check() ? getKingSquare(tempGame.turn(), tempGame) : null;
+            const isHistorical = historyViewIndex < historyFenList.length - 1;
+
+            for (let r = 0; r < 8; r++) {
+                const row = isFlipped ? r : 7 - r;
+                for (let c = 0; c < 8; c++) {
+                    const col = isFlipped ? 7 - c : c;
+                    const squareId = String.fromCharCode(97 + col) + (row + 1);
+                    const isDark = (row + col) % 2 === 0;
+
+                    const squareDiv = document.createElement('div');
+                    squareDiv.id = `sq-${squareId}`;
+                    squareDiv.className = `square ${isDark ? 'square-dark' : 'square-light'}`;
+                    squareDiv.dataset.square = squareId;
+
+                    if (selectedSquare === squareId) {
+                        squareDiv.classList.add('selected');
+                    }
+
+                    if (activeCheckSquare === squareId) {
+                        squareDiv.classList.add('check');
+                    }
+
+                    if (lastMoveSquares && !isHistorical && (squareId === lastMoveSquares.from || squareId === lastMoveSquares.to)) {
+                        squareDiv.classList.add('last-move-highlight');
+                    }
+
+                    const piece = tempGame.get(squareId);
+                    if (piece) {
+                        const pieceDiv = document.createElement('div');
+                        pieceDiv.className = `chess-piece ${activeTheme === 'futuristic' ? 'neon-glowing' : ''}`;
+                        pieceDiv.setAttribute('draggable', !isHistorical ? 'true' : 'false');
+                        
+                        let svgContent = piecesSvgMap[piece.type][piece.color];
+                        pieceDiv.style.color = getPieceColor(piece.color);
+                        pieceDiv.innerHTML = svgContent;
+
+                        if (!isHistorical) {
+                            pieceDiv.addEventListener('dragstart', (e) => handleDragStart(e, squareId));
+                            pieceDiv.addEventListener('dragend', handleDragEnd);
+                            pieceDiv.addEventListener('touchstart', (e) => handleTouchStart(e, squareId), {passive: true});
+                        }
+
+                        squareDiv.appendChild(pieceDiv);
+                    }
+
+                    const targetMove = legalMoves.find(m => m.to === squareId);
+                    if (targetMove && !isHistorical) {
+                        const indicator = document.createElement('div');
+                        if (targetMove.captured) {
+                            indicator.className = 'valid-capture';
+                        } else {
+                            indicator.className = 'valid-dot';
+                        }
+                        squareDiv.appendChild(indicator);
+                    }
+
+                    squareDiv.addEventListener('click', () => handleSquareClick(squareId));
+                    squareDiv.addEventListener('dragover', (e) => e.preventDefault());
+                    squareDiv.addEventListener('drop', (e) => handleDrop(e, squareId));
+
+                    boardGrid.appendChild(squareDiv);
+                }
+            }
+            updateMaterialAdvantage(tempGame);
+            calculateEvaluationBar(tempGame);
+        }
+
+        let draggedSquare = null;
+
+        function handleDragStart(e, squareId) {
+            if (mode === 'LLM' && game.turn() !== playerColor) {
+                e.preventDefault();
+                return;
+            }
+            draggedSquare = squareId;
+            e.dataTransfer.setData('text/plain', squareId);
+            setTimeout(() => {
+                const el = document.getElementById(`sq-${squareId}`).querySelector('.chess-piece');
+                if (el) el.classList.add('dragging');
+            }, 0);
+            
+            selectedSquare = squareId;
+            legalMoves = game.moves({ square: squareId, verbose: true });
+            renderBoard();
+        }
+
+        function handleDragEnd() {
+            draggedSquare = null;
+            selectedSquare = null;
+            legalMoves = [];
+            renderBoard();
+        }
+
+        function handleDrop(e, targetSquare) {
+            e.preventDefault();
+            const sourceSquare = e.dataTransfer.getData('text/plain');
+            if (sourceSquare) {
+                attemptMove(sourceSquare, targetSquare);
+            }
+        }
+
+        function handleSquareClick(squareId) {
+            // Block move on time-machine travel states
+            if (historyViewIndex < historyFenList.length - 1) return;
+
+            if (mode === 'LLM' && game.turn() !== playerColor) return;
+
+            const piece = game.get(squareId);
+
+            if (selectedSquare && legalMoves.some(m => m.to === squareId)) {
+                attemptMove(selectedSquare, squareId);
+                selectedSquare = null;
+                legalMoves = [];
+            } else if (piece && piece.color === game.turn()) {
+                selectedSquare = squareId;
+                legalMoves = game.moves({ square: squareId, verbose: true });
+                renderBoard();
+            } else {
+                selectedSquare = null;
+                legalMoves = [];
+                renderBoard();
+            }
+        }
+
+        let touchStartSquare = null;
+        function handleTouchStart(e, squareId) {
+            if (historyViewIndex < historyFenList.length - 1) return;
+            if (mode === 'LLM' && game.turn() !== playerColor) return;
+            touchStartSquare = squareId;
+            handleSquareClick(squareId);
+        }
+
+        function getKingSquare(color, targetGame) {
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const square = String.fromCharCode(97 + c) + (r + 1);
+                    const piece = targetGame.get(square);
+                    if (piece && piece.type === 'k' && piece.color === color) {
+                        return square;
+                    }
+                }
+            }
+            return null;
+        }
+
+        let promotionCallback = null;
+
+        function attemptMove(from, to) {
+            const possibleMoves = game.moves({ square: from, verbose: true });
+            const move = possibleMoves.find(m => m.from === from && m.to === to);
+
+            if (!move) return false;
+
+            if (move.flags.includes('p')) {
+                showPromotionModal((chosenPiece) => {
+                    executeMove({ from: from, to: to, promotion: chosenPiece });
+                });
+                return true;
+            }
+
+            executeMove({ from: from, to: to });
+            return true;
+        }
+
+        function showPromotionModal(callback) {
+            promotionCallback = callback;
+            const modal = document.getElementById('promotion-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function selectPromotionPiece(piece) {
+            const modal = document.getElementById('promotion-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            if (promotionCallback) promotionCallback(piece);
+        }
+
+        function executeMove(moveObj, isRedo = false) {
+            const result = game.move(moveObj);
+
+            if (result) {
+                if (!isRedo) {
+                    redoStack = [];
+                }
+                lastMoveSquares = { from: result.from, to: result.to };
+
+                if (result.captured) {
+                    playSound('capture');
+                } else if (game.in_check()) {
+                    playSound('check');
+                } else {
+                    playSound('move');
+                }
+
+                historyArray.push(result.san);
+                historyFenList.push(game.fen());
+                historyViewIndex = historyFenList.length - 1;
+
+                logNeuralMove(result.color, result.san);
+                renderBoard();
+                updateHistoryBox();
+                
+                updateCapturedPieces(game);
+                saveGameProgress();
+
+                selectedSquare = null;
+                legalMoves = [];
+
+                checkGameTermination();
+
+                // Fischer Increment additions
+                if (incrementValue > 0) {
+                    timeRemaining[result.color] += incrementValue;
+                }
+
+                toggleTimerActive();
+
+                if (mode === 'LLM' && !game.game_over() && game.turn() !== playerColor) {
+                    triggerGeminiEngine();
+                }
+            }
+        }
+
+        function evaluateBoard(boardInstance) {
+            const values = { p: 100, r: 500, n: 320, b: 330, q: 900, k: 20000 };
+            
+            // Simple center-control tables for positional enhancement
+            const centerBonus = {
+                d4: 15, e4: 15, d5: 15, e5: 15,
+                c4: 8, f4: 8, c5: 8, f5: 8
+            };
+
+            let score = 0;
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const square = String.fromCharCode(97 + c) + (r + 1);
+                    const piece = boardInstance.get(square);
+                    if (piece) {
+                        let val = values[piece.type];
+                        if (centerBonus[square]) val += centerBonus[square];
+
+                        score += (piece.color === 'w') ? val : -val;
+                    }
+                }
+            }
+            return score;
+        }
+
+        function calculateEvaluationBar(boardInstance) {
+            const score = evaluateBoard(boardInstance);
+            
+            // Convert score to a readable decimal pawn format
+            const pawnEval = (score / 100).toFixed(1);
+            const label = pawnEval > 0 ? `+${pawnEval}` : pawnEval;
+            document.getElementById('eval-label').innerText = label;
+
+            // Constrain between 0% and 100% height representing Black/White dominance
+            // Score of +500 (5 pawns) is max dominance (100% white)
+            // Score of -500 is max dominance (0% white)
+            let percentage = 50 + (score / 15);
+            percentage = Math.max(5, Math.min(95, percentage));
+
+            document.getElementById('eval-bar-fill').style.height = `${percentage}%`;
+        }
+
+        function minimax(board, depth, alpha, beta, isMaximizing) {
+            if (depth === 0 || board.game_over()) {
+                return evaluateBoard(board);
+            }
+
+            const moves = board.moves({ verbose: true });
+            if (isMaximizing) {
+                let maxEval = -Infinity;
+                for (let move of moves) {
+                    board.move({ from: move.from, to: move.to, promotion: 'q' });
+                    let ev = minimax(board, depth - 1, alpha, beta, false);
+                    board.undo();
+                    maxEval = Math.max(maxEval, ev);
+                    alpha = Math.max(alpha, ev);
+                    if (beta <= alpha) break;
+                }
+                return maxEval;
+            } else {
+                let minEval = Infinity;
+                for (let move of moves) {
+                    board.move({ from: move.from, to: move.to, promotion: 'q' });
+                    let ev = minimax(board, depth - 1, alpha, beta, true);
+                    board.undo();
+                    minEval = Math.min(minEval, ev);
+                    beta = Math.min(beta, ev);
+                    if (beta <= alpha) break;
+                }
+                return minEval;
+            }
+        }
+
+        function calculateBestLocalMove() {
+            const moves = game.moves({ verbose: true });
+            if (moves.length === 0) return null;
+
+            if (difficulty === 'easy' && Math.random() < 0.45) {
+                return moves[Math.floor(Math.random() * moves.length)];
+            }
+
+            let bestMove = null;
+            let bestValue = (game.turn() === 'w') ? -Infinity : Infinity;
+
+            for (let move of moves) {
+                game.move({ from: move.from, to: move.to, promotion: 'q' });
+                let boardValue = minimax(game, 2, -Infinity, Infinity, game.turn() === 'w');
+                game.undo();
+
+                if (game.turn() === 'w') {
+                    if (boardValue > bestValue) {
+                        bestValue = boardValue;
+                        bestMove = move;
+                    }
+                } else {
+                    if (boardValue < bestValue) {
+                        bestValue = boardValue;
+                        bestMove = move;
+                    }
+                }
+            }
+            return bestMove;
+        }
+
+        async function triggerGeminiEngine() {
+            showLoadingOverlay(true, "Gemini analyzing chessboard vectors...");
+            const currentFEN = game.fen();
+            const legalMoveList = game.moves({ verbose: true });
+            
+            const systemPrompt = `You are a professional chess grandmaster playing the black pieces. Your opponent is a human playing white. Choose your next move strategically. Make sure it is legally allowed. Respond with a strictly structured JSON containing {"move": "f3", "thought": "Brief Grandmaster thought"}`;
+            
+            const uciMoves = legalMoveList.map(m => `${m.from}${m.to}${m.promotion || ''}`);
+            const userPrompt = `
+                Board FEN State: ${currentFEN}
+                Game Move History: ${historyArray.join(', ')}
+                Legal SAN Moves: ${legalMoveList.map(m => m.san).join(', ')}
+                Legal UCI Moves: ${uciMoves.join(', ')}
+                Difficulty Selected: ${difficulty}
+                
+                Please evaluate and select your next move. Reply with a valid JSON schema with parameters: "move" and "thought".
+            `;
+
+            const aiLogBox = document.getElementById('ai-thought-box');
+            const customKey = document.getElementById('api-key-input').value;
+            const modelDropdown = document.getElementById('api-model-select');
+            const modelName = modelDropdown ? modelDropdown.value : "gemini-3-flash-preview";
+
+            try {
+                const payload = {
+                    contents: [{ parts: [{ text: userPrompt }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                move: { type: "STRING" },
+                                thought: { type: "STRING" }
+                            },
+                            required: ["move", "thought"]
+                        }
+                    },
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    }
+                };
+
+                const resolvedUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${customKey}`;
+                const response = await fetch(resolvedUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed connecting to API. Initializing local MiniMax fallback.");
+                }
+
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (text) {
+                    const parsed = JSON.parse(text);
+                    const chosenMove = parsed.move;
+                    const thoughtLog = parsed.thought;
+
+                    aiLogBox.innerHTML += `
+                        <div class="border-l-2 border-pink-500 pl-2 py-1 bg-pink-950/20 rounded-r text-[11px] mb-2">
+                            <span class="font-bold text-accent">Gemini:</span> "${thoughtLog}"
+                        </div>
+                    `;
+                    aiLogBox.scrollTop = aiLogBox.scrollHeight;
+
+                    const matchedMove = findLegalMoveMatch(chosenMove);
+                    if (matchedMove) {
+                        setTimeout(() => {
+                            executeMove(matchedMove);
+                            showLoadingOverlay(false);
+                        }, 600);
+                        return;
+                    }
+                }
+                throw new Error("Invalid move JSON received. Falling back to MiniMax.");
+
+            } catch (err) {
+                console.warn(err);
+                const localBest = calculateBestLocalMove();
+                if (localBest) {
+                    aiLogBox.innerHTML += `
+                        <div class="border-l-2 border-emerald-500 pl-2 py-1 bg-emerald-950/20 rounded-r text-[11px] mb-2">
+                            <span class="font-bold text-emerald-400">Local Sandbox (Fallback):</span> Executing fallback heuristic move due to connection limits.
+                        </div>
+                    `;
+                    aiLogBox.scrollTop = aiLogBox.scrollHeight;
+
+                    setTimeout(() => {
+                        executeMove(localBest);
+                        showLoadingOverlay(false);
+                    }, 800);
+                }
+            }
+        }
+
+        async function openCoachModal() {
+            const modal = document.getElementById('coach-modal');
+            const contentBox = document.getElementById('coach-content');
+            
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            contentBox.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-10 space-y-3">
+                    <div class="animate-spin text-3xl text-accent"><i class="fa-solid fa-circle-notch"></i></div>
+                    <p class="text-center text-muted text-[11px]">Coach is evaluating positional patterns...</p>
+                </div>
+            `;
+
+            const fen = game.fen();
+            const turnStr = game.turn() === 'w' ? 'White' : 'Black';
+            const historyStr = historyArray.join(', ');
+            const customKey = document.getElementById('api-key-input').value;
+            const modelDropdown = document.getElementById('api-model-select');
+            const modelName = modelDropdown ? modelDropdown.value : "gemini-3-flash-preview";
+
+            const systemPrompt = "You are an elite, encouraging chess coach. Speak directly to the student. Analyze the position structure, point out immediate tactical threats for both sides, suggest the top 3 recommended moves, and explain the positional reasoning briefly.";
+            const userPrompt = `
+                Active Chess Turn: ${turnStr}
+                Current Position FEN: ${fen}
+                Played Move History: ${historyStr}
+                Please formulate a concise, encouraging coaching response.
+            `;
+
+            try {
+                const payload = {
+                    contents: [{ parts: [{ text: userPrompt }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                analysis: { type: "STRING", description: "Positional threats and advantages" },
+                                moves: { 
+                                    type: "ARRAY", 
+                                    items: { type: "STRING" },
+                                    description: "Top 3 candidate moves for turn player with brief description of each"
+                                }
+                            },
+                            required: ["analysis", "moves"]
+                        }
+                    },
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    }
+                };
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${customKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error("API Limit reached.");
+                }
+
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (text) {
+                    const parsed = JSON.parse(text);
+                    const analysisHtml = parsed.analysis;
+                    const movesHtml = parsed.moves.map(m => `<li>${m}</li>`).join('');
+
+                    contentBox.innerHTML = `
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-xs font-bold text-accent uppercase mb-1">Coach Breakdown:</h4>
+                                <p class="text-slate-300">${analysisHtml}</p>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-accent uppercase mb-1">Recommended Candidates:</h4>
+                                <ul class="list-disc list-inside space-y-1.5 text-slate-300 pl-1">
+                                    ${movesHtml}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+
+                    // Speech Synthesis triggers if checked
+                    if (document.getElementById('tts-coach-toggle').checked) {
+                        speakText(`${parsed.analysis}. Recommended moves include: ${parsed.moves.join(', ')}`);
+                    }
+                }
+            } catch (err) {
+                contentBox.innerHTML = `
+                    <div class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg text-rose-400">
+                        <p class="font-bold mb-1"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Coaching Module Offline</p>
+                        <p class="text-[11px]">Make sure to configure an active Gemini API key in the side settings deck to request live Coach assistance.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function closeCoachModal() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            document.getElementById('coach-modal').classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function findLegalMoveMatch(moveStr) {
+            const moves = game.moves({ verbose: true });
+            const cleanStr = moveStr.replace(/[#\+\s]/g, '').toLowerCase();
+
+            for (let m of moves) {
+                if (m.san.replace(/[#\+\s]/g, '').toLowerCase() === cleanStr) return m;
+                if (`${m.from}${m.to}`.toLowerCase() === cleanStr) return m;
+                if (`${m.from}${m.to}q`.toLowerCase() === cleanStr) return m;
+            }
+            return null;
+        }
+
+        function updateCapturedPieces(boardInstance) {
+            const startPieces = { p: 8, n: 2, b: 2, r: 2, q: 1, k: 1 };
+            const currentPieces = {
+                w: { p:0, n:0, b:0, r:0, q:0, k:0 },
+                b: { p:0, n:0, b:0, r:0, q:0, k:0 }
+            };
+
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const square = String.fromCharCode(97 + c) + (r + 1);
+                    const piece = boardInstance.get(square);
+                    if (piece) {
+                        currentPieces[piece.color][piece.type]++;
+                    }
+                }
+            }
+
+            captured.w = [];
+            captured.b = [];
+
+            const pieceCharSymbol = {
+                p: '♙', n: '♘', b: '♗', r: '♖', q: '♕', k: '♔'
+            };
+
+            for (let type in startPieces) {
+                const diffW = startPieces[type] - currentPieces.w[type];
+                for (let i = 0; i < diffW; i++) captured.w.push(pieceCharSymbol[type]);
+
+                const diffB = startPieces[type] - currentPieces.b[type];
+                for (let i = 0; i < diffB; i++) captured.b.push(pieceCharSymbol[type]);
+            }
+
+            document.getElementById('white-captured').innerText = captured.w.join(' ');
+            document.getElementById('black-captured').innerText = captured.b.join(' ');
+        }
+
+        function updateMaterialAdvantage(boardInstance) {
+            const values = { p:1, n:3, b:3, r:5, q:9, k:0 };
+            let whiteVal = 0;
+            let blackVal = 0;
+
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const square = String.fromCharCode(97 + c) + (r + 1);
+                    const piece = boardInstance.get(square);
+                    if (piece) {
+                        const val = values[piece.type];
+                        if (piece.color === 'w') whiteVal += val;
+                        else blackVal += val;
+                    }
+                }
+            }
+
+            const whiteAdvEl = document.getElementById('white-material-advantage');
+            const blackAdvEl = document.getElementById('black-material-advantage');
+
+            if (whiteVal > blackVal) {
+                whiteAdvEl.innerText = `+${whiteVal - blackVal}`;
+                whiteAdvEl.classList.remove('hidden');
+                blackAdvEl.classList.add('hidden');
+            } else if (blackVal > whiteVal) {
+                blackAdvEl.innerText = `+${blackVal - whiteVal}`;
+                blackAdvEl.classList.remove('hidden');
+                whiteAdvEl.classList.add('hidden');
+            } else {
+                whiteAdvEl.classList.add('hidden');
+                blackAdvEl.classList.add('hidden');
+            }
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                // If viewing historical state, pause active timer ticks
+                if (historyViewIndex < historyFenList.length - 1) return;
+
+                const turn = game.turn();
+                timeRemaining[turn]--;
+
+                if (timeRemaining[turn] <= 0) {
+                    clearInterval(timerInterval);
+                    triggerTimeout(turn);
+                }
+
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function toggleTimerActive() {
+            if (!timerInterval) {
+                startTimer();
+            }
+        }
+
+        function updateTimerDisplay() {
+            const formatTime = (sec) => {
+                const m = Math.floor(sec / 60);
+                const s = sec % 60;
+                return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            document.getElementById('timer-white').innerText = formatTime(timeRemaining.w);
+            document.getElementById('timer-black').innerText = formatTime(timeRemaining.b);
+        }
+
+        function triggerTimeout(losingColor) {
+            playSound('check');
+            const winner = losingColor === 'w' ? 'Black' : 'White';
+            showGameOverModal("Flag Fall / Timeout", `${winner} team won the match on time!`);
+        }
+
+        function undoMove() {
+            if (historyArray.length === 0) return;
+            
+            if (mode === 'LLM') {
+                const m1 = game.undo();
+                const m2 = game.undo();
+                if (m1) redoStack.push(m1);
+                if (m2) redoStack.push(m2);
+                historyArray.pop();
+                historyArray.pop();
+                historyFenList.pop();
+                historyFenList.pop();
+            } else {
+                const m = game.undo();
+                if (m) redoStack.push(m);
+                historyArray.pop();
+                historyFenList.pop();
+            }
+
+            lastMoveSquares = null;
+            historyViewIndex = historyFenList.length - 1;
+            renderBoard();
+            updateHistoryBox();
+            updateCapturedPieces(game);
+            updateTimerDisplay();
+            saveGameProgress();
+        }
+
+        function redoMove() {
+            if (redoStack.length === 0) return;
+            
+            if (mode === 'LLM') {
+                if (redoStack.length >= 2) {
+                    const m1 = redoStack.pop();
+                    const m2 = redoStack.pop();
+                    executeMove({from: m1.from, to: m1.to, promotion: m1.promotion}, true);
+                    executeMove({from: m2.from, to: m2.to, promotion: m2.promotion}, true);
+                }
+            } else {
+                const m = redoStack.pop();
+                executeMove({from: m.from, to: m.to, promotion: m.promotion}, true);
+            }
+        }
+
+
+        function resignGame() {
+            clearInterval(timerInterval);
+            const winner = game.turn() === 'w' ? 'Black' : 'White';
+            showGameOverModal("Match Resigned", `${winner} team wins by resignation!`);
+        }
+
+        function checkGameTermination() {
+            if (game.in_checkmate()) {
+                clearInterval(timerInterval);
+                const winner = game.turn() === 'w' ? 'Black' : 'White';
+                showGameOverModal("Checkmate", `${winner} wins the chess match!`);
+            } else if (game.in_draw()) {
+                clearInterval(timerInterval);
+                showGameOverModal("Match Drawn", "Stalemate, threefold repetition or insufficient material.");
+            }
+        }
+
+        function showLoadingOverlay(show, text = "") {
+            const overlay = document.getElementById('loading-overlay');
+            const statusText = document.getElementById('gemini-thinking-status');
+            if (text) statusText.innerText = text;
+            
+            if (show) {
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        function showGameOverModal(title, msg) {
+            document.getElementById('game-over-title').innerText = title;
+            document.getElementById('game-over-message').innerText = msg;
+            const modal = document.getElementById('game-over-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            
+            // Trigger confetti if someone won
+            if (title.toLowerCase().includes('win') || title.toLowerCase().includes('mate') || title.toLowerCase().includes('resigned') || title.toLowerCase().includes('time')) {
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti-piece';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.animationDelay = Math.random() * 2 + 's';
+                    confetti.style.backgroundColor = ['#ec4899', '#00ffff', '#3b82f6', '#39ff14', '#f59e0b'][Math.floor(Math.random() * 5)];
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 4000);
+                }
+            }
+        }
+
+        function hideGameOverModal() {
+            const modal = document.getElementById('game-over-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function restartMatch() {
+            hideGameOverModal();
+            startNewGame();
+        }
+
+        function logNeuralMove(color, sanMove) {
+            const logs = document.getElementById('ai-thought-box');
+            const sender = color === 'w' ? 'White Player' : 'Black AI';
+            const textStyle = color === 'w' ? 'text-blue-400' : 'text-accent';
+            logs.innerHTML += `<div><span class="${textStyle} font-bold">${sender}:</span> Made valid move ${sanMove}.</div>`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function exploreHistoryIndex(index) {
+            historyViewIndex = index;
+            const banner = document.getElementById('time-machine-banner');
+            
+            if (historyViewIndex < historyFenList.length - 1) {
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+
+            renderBoard();
+            updateHistoryBox();
+        }
+
+        function resumeGameToCurrent() {
+            exploreHistoryIndex(historyFenList.length - 1);
+        }
+
+        function updateHistoryBox() {
+            const box = document.getElementById('history-box');
+            box.innerHTML = '';
+            
+            for (let i = 0; i < historyArray.length; i += 2) {
+                const step = Math.floor(i / 2) + 1;
+                const whiteMove = historyArray[i];
+                const blackMove = historyArray[i+1] || "";
+
+                const indexW = i + 1;
+                const indexB = i + 2;
+
+                const classW = (historyViewIndex === indexW) ? 'text-accent border-b border-accent' : 'text-muted';
+                const classB = (historyViewIndex === indexB) ? 'text-accent border-b border-accent' : 'text-accent font-bold';
+
+                box.innerHTML += `
+                    <div class="flex items-center gap-1 overflow-hidden">
+                        <div class="${classW} flex-1 cursor-pointer hover:bg-slate-800 p-0.5 rounded truncate" onclick="exploreHistoryIndex(${indexW})">${step}. ${whiteMove}</div>
+                        ${whiteMove ? `<button class="text-[8px] text-muted hover:text-accent flex-shrink-0" onclick="askWhyMove(${indexW}, '${whiteMove}')" title="Why this move?"><i class="fa-solid fa-question"></i></button>` : ''}
+                    </div>
+                    <div class="flex items-center gap-1 overflow-hidden">
+                        <div class="${classB} flex-1 cursor-pointer hover:bg-slate-800 p-0.5 rounded truncate" onclick="exploreHistoryIndex(${indexB})">${blackMove}</div>
+                        ${blackMove ? `<button class="text-[8px] text-muted hover:text-accent flex-shrink-0" onclick="askWhyMove(${indexB}, '${blackMove}')" title="Why this move?"><i class="fa-solid fa-question"></i></button>` : ''}
+                    </div>
+                `;
+            }
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function switchRightTab(tab) {
+            const histBtn = document.getElementById('tab-history-btn');
+            const logBtn = document.getElementById('tab-log-btn');
+            const histContent = document.getElementById('tab-history-content');
+            const logContent = document.getElementById('tab-log-content');
+
+            if (tab === 'history') {
+                histBtn.className = "flex-1 py-1.5 text-center text-xs font-bold border-b-2 border-accent text-accent";
+                logBtn.className = "flex-1 py-1.5 text-center text-xs font-bold text-muted hover:text-main";
+                histContent.classList.remove('hidden');
+                logContent.classList.add('hidden');
+            } else {
+                logBtn.className = "flex-1 py-1.5 text-center text-xs font-bold border-b-2 border-accent text-accent";
+                histBtn.className = "flex-1 py-1.5 text-center text-xs font-bold text-muted hover:text-main";
+                logContent.classList.remove('hidden');
+                histContent.classList.add('hidden');
+            }
+        }
+
+        function setTheme(theme) {
+            activeTheme = theme;
+            document.body.className = `h-full flex flex-col antialiased theme-${theme} transition-all duration-300`;
+            
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                if (btn.dataset.theme === theme) {
+                    btn.classList.add('bg-accent', 'text-slate-900', 'font-bold');
+                } else {
+                    btn.classList.remove('bg-accent', 'text-slate-900', 'font-bold');
+                }
+            });
+
+            renderBoard();
+            localStorage.setItem('gemini_chess_theme', theme);
+        }
+
+        function flipBoard() {
+            isFlipped = !isFlipped;
+            renderBoard();
+        }
+
+        function changeGameMode(newMode) {
+            mode = newMode;
+            const localBtn = document.getElementById('mode-local-btn');
+            const llmBtn = document.getElementById('mode-llm-btn');
+            const llmPanel = document.getElementById('llm-config-panel');
+            const currentBadge = document.getElementById('current-mode-badge');
+
+            if (mode === 'LOCAL') {
+                localBtn.className = "py-2.5 px-3 rounded-lg text-xs font-bold border border-accent bg-accent/20 text-accent transition-all";
+                llmBtn.className = "py-2.5 px-3 rounded-lg text-xs font-bold border border-theme transition-all hover:border-accent hover:text-accent opacity-75";
+                llmPanel.classList.add('hidden');
+                currentBadge.innerText = "LOCAL P&P";
+                document.getElementById('black-player-name').innerText = "Player Two (Local)";
+                document.getElementById('black-player-icon').className = "fa-solid fa-user-friends text-lg text-accent";
+                document.getElementById('black-player-meta').innerText = "Pass and Play Chess";
+            } else {
+                llmBtn.className = "py-2.5 px-3 rounded-lg text-xs font-bold border border-accent bg-accent/20 text-accent transition-all";
+                localBtn.className = "py-2.5 px-3 rounded-lg text-xs font-bold border border-theme transition-all hover:border-accent hover:text-accent opacity-75";
+                llmPanel.classList.remove('hidden');
+                currentBadge.innerText = "GEMINI 3.0 ACTIVE";
+                document.getElementById('black-player-name').innerText = "Gemini 3.0 Flash";
+                document.getElementById('black-player-icon').className = "fa-solid fa-robot text-lg text-accent animate-pulse";
+                document.getElementById('black-player-meta').innerText = "AI Opponent Active";
+            }
+            startNewGame();
+        }
+
+        function setDifficulty(diff) {
+            difficulty = diff;
+            document.querySelectorAll('#llm-config-panel button').forEach(btn => {
+                btn.className = "py-1.5 rounded text-[10px] font-bold border border-theme bg-slate-800 hover:opacity-100";
+            });
+
+            const activeBtn = document.getElementById(`diff-${diff}`);
+            if (diff === 'easy') activeBtn.className = "py-1.5 rounded text-[10px] font-bold border border-emerald-500 bg-emerald-500/20 text-emerald-400";
+            if (diff === 'medium') activeBtn.className = "py-1.5 rounded text-[10px] font-bold border border-amber-500 bg-amber-500/20 text-amber-400";
+            if (diff === 'hard') activeBtn.className = "py-1.5 rounded text-[10px] font-bold border border-rose-500 bg-rose-500/20 text-rose-400";
+            localStorage.setItem('gemini_chess_diff', diff);
+        }
+
+        function setTimerOption(seconds, increment = 0) {
+            chosenTimerOption = seconds;
+            incrementValue = increment;
+
+            document.getElementById('selected-clock-label').innerText = `${seconds / 60} mins + ${increment}s increment`;
+
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.classList.remove('bg-accent/20', 'border-accent', 'text-accent');
+                btn.classList.add('bg-slate-800', 'border-theme');
+            });
+            event.target.classList.add('bg-accent/20', 'border-accent', 'text-accent');
+            event.target.classList.remove('bg-slate-800', 'border-theme');
+            startNewGame();
+        }
+
+        function handleCommandLineKey(event) {
+            if (event.key === 'Enter') {
+                const inputEl = document.getElementById('keyboard-move-input');
+                const command = inputEl.value.trim().toLowerCase();
+                inputEl.value = '';
+
+                if (command.length === 4) {
+                    const from = command.substring(0, 2);
+                    const to = command.substring(2, 4);
+                    
+                    const success = attemptMove(from, to);
+                    if (!success) {
+                        playSound('check');
+                    }
+                } else if (command.length === 5) { // Promotion e.g., "e7e8q"
+                    const from = command.substring(0, 2);
+                    const to = command.substring(2, 4);
+                    const promotion = command.substring(4, 5);
+                    
+                    executeMove({ from: from, to: to, promotion: promotion });
+                } else {
+                    // Try to execute by direct SAN
+                    const moves = game.moves({ verbose: true });
+                    const match = moves.find(m => m.san.toLowerCase() === command);
+                    if (match) {
+                        executeMove(match);
+                    } else {
+                        playSound('check');
+                    }
+                }
+            }
+        }
+
+        // FEN Utilities
+        function importFenPosition() {
+            const fen = document.getElementById('fen-import-input').value.trim();
+            const validation = game.validate_fen(fen);
+            if (validation.valid) {
+                game = new Chess(fen);
+                historyFenList = [fen];
+                historyArray = [];
+                historyViewIndex = 0;
+                
+                selectedSquare = null;
+                legalMoves = [];
+                
+                renderBoard();
+                updateHistoryBox();
+                updateCapturedPieces(game);
+                saveGameProgress();
+            } else {
+                playSound('check');
+            }
+        }
+
+        function copyCurrentFen() {
+            const fen = game.fen();
+            const el = document.createElement('textarea');
+            el.value = fen;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+        }
+
+        function copyCurrentPgn() {
+            const pgn = game.pgn();
+            const el = document.createElement('textarea');
+            el.value = pgn || historyArray.join(' ');
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+        }
+
+        // Persistent State Functions
+        function saveGameProgress() {
+            const saveData = {
+                fenList: historyFenList,
+                history: historyArray,
+                timers: timeRemaining,
+                mode: mode,
+                difficulty: difficulty
+            };
+            localStorage.setItem('gemini_chess_save', JSON.stringify(saveData));
+        }
+
+        function loadGameProgress() {
+            const saved = localStorage.getItem('gemini_chess_save');
+            const savedTheme = localStorage.getItem('gemini_chess_theme') || 'dark';
+            const savedDiff = localStorage.getItem('gemini_chess_diff') || 'medium';
+
+            setTheme(savedTheme);
+            setDifficulty(savedDiff);
+
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    historyFenList = parsed.fenList;
+                    historyArray = parsed.history;
+                    timeRemaining = parsed.timers;
+                    
+                    // Restore latest FEN to Chess Instance
+                    const latestFen = historyFenList[historyFenList.length - 1];
+                    game = new Chess(latestFen);
+                    historyViewIndex = historyFenList.length - 1;
+
+                    changeGameMode(parsed.mode);
+                    return true;
+                } catch (e) {
+                    console.warn("Could not load state from localstorage: ", e);
+                }
+            }
+            return false;
+        }
+
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const drawer = document.getElementById('drawer');
+        const drawerCloseBtn = document.getElementById('drawer-close-btn');
+
+        hamburgerBtn.addEventListener('click', () => {
+            drawer.classList.remove('-translate-x-full');
+        });
+
+        drawerCloseBtn.addEventListener('click', () => {
+            drawer.classList.add('-translate-x-full');
+        });
+
+        function startNewGame() {
+            game = new Chess();
+            selectedSquare = null;
+            legalMoves = [];
+            historyArray = [];
+            historyFenList = [game.fen()];
+            historyViewIndex = 0;
+            captured = { w: [], b: [] };
+            
+            timeRemaining = { w: chosenTimerOption, b: chosenTimerOption };
+            clearInterval(timerInterval);
+            timerInterval = null;
+
+            updateTimerDisplay();
+            updateHistoryBox();
+            updateCapturedPieces(game);
+            setTheme(activeTheme);
+            renderBoard();
+            saveGameProgress();
+
+            document.getElementById('time-machine-banner').classList.add('hidden');
+            document.getElementById('ai-thought-box').innerHTML = `
+                <div class="text-accent italic text-[11px]"><i class="fa-solid fa-chess mr-1"></i> Match restarted. Turn: White. Ready to play.</div>
+            `;
+        }
+
+        let isSpectatorMode = false;
+        let spectatorInterval = null;
+
+        function toggleSpectatorMode(checked) {
+            isSpectatorMode = checked;
+            if (isSpectatorMode && !game.game_over()) {
+                if (mode !== 'LLM') {
+                    changeGameMode('LLM');
+                }
+                spectatorInterval = setInterval(() => {
+                    if (game.game_over()) {
+                        clearInterval(spectatorInterval);
+                        return;
+                    }
+                    if (document.getElementById('loading-overlay').classList.contains('opacity-0')) {
+                        triggerGeminiEngine();
+                    }
+                }, 4000);
+                showToast("Spectator Mode Active. AI vs AI match starting...", "fa-robot");
+            } else {
+                clearInterval(spectatorInterval);
+                showToast("Spectator Mode Disabled.", "fa-user");
+            }
+        }
+
+        function toggleAnimations(checked) {
+            if (checked) {
+                document.body.classList.remove('no-animations');
+                const styleEl = document.getElementById('no-anim-style');
+                if (styleEl) styleEl.remove();
+            } else {
+                document.body.classList.add('no-animations');
+                const styleEl = document.createElement('style');
+                styleEl.id = 'no-anim-style';
+                styleEl.innerHTML = `* { animation: none !important; transition: none !important; }`;
+                document.head.appendChild(styleEl);
+            }
+        }
+
+        function loadRandomChallenge() {
+            const fens = [
+                "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 4 5",
+                "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+                "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
+                "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1",
+                "rn2kb1r/pp3ppp/2p1pn2/q7/2B3b1/2N2N2/PPPP1PPP/R1BQR1K1 w kq - 2 8"
+            ];
+            const randomFen = fens[Math.floor(Math.random() * fens.length)];
+            document.getElementById('fen-import-input').value = randomFen;
+            importFenPosition();
+            showToast("Random Tactics FEN Loaded!", "fa-dice");
+        }
+
+        function provideHint() {
+            if (game.game_over()) return;
+            const hintMove = calculateBestLocalMove();
+            if (hintMove) {
+                showToast(`Recommended Move: ${hintMove.san}`, "fa-lightbulb");
+                const fromSq = document.getElementById(`sq-${hintMove.from}`);
+                const toSq = document.getElementById(`sq-${hintMove.to}`);
+                if (fromSq) fromSq.classList.add('last-move-highlight');
+                if (toSq) toSq.classList.add('last-move-highlight');
+                setTimeout(() => renderBoard(), 3000);
+            }
+        }
+
+        async function askWhyMove(index, move) {
+            const modal = document.getElementById('coach-modal');
+            const contentBox = document.getElementById('coach-content');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            
+            contentBox.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-10 space-y-3">
+                    <div class="animate-spin text-3xl text-accent"><i class="fa-solid fa-circle-notch"></i></div>
+                    <p class="text-center text-muted text-[11px]">Coach is analyzing move ${move}...</p>
+                </div>
+            `;
+
+            const targetFen = historyFenList[index - 1] || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            const customKey = document.getElementById('api-key-input').value;
+            const modelDropdown = document.getElementById('api-model-select');
+            const modelName = modelDropdown ? modelDropdown.value : "gemini-3-flash-preview";
+
+            const systemPrompt = "You are a chess coach. Explain concisely why the provided move was made in the given position.";
+            const userPrompt = `
+                Position FEN before move: ${targetFen}
+                Move played: ${move}
+                Please explain why this move is good or bad.
+            `;
+
+            try {
+                const payload = {
+                    contents: [{ parts: [{ text: userPrompt }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                explanation: { type: "STRING" }
+                            },
+                            required: ["explanation"]
+                        }
+                    },
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                };
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${customKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error("API Limit");
+                
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (text) {
+                    const parsed = JSON.parse(text);
+                    contentBox.innerHTML = `
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-xs font-bold text-accent uppercase mb-1">Analysis for ${move}:</h4>
+                                <p class="text-slate-300">${parsed.explanation}</p>
+                            </div>
+                        </div>
+                    `;
+                    if (document.getElementById('tts-coach-toggle').checked) speakText(parsed.explanation);
+                }
+            } catch (err) {
+                contentBox.innerHTML = `
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-xs font-bold text-accent uppercase mb-1">Local Analysis for ${move}:</h4>
+                            <p class="text-slate-300">This move aims to control space and improve piece activity. (Configure Gemini API key for detailed GM-level reasoning!)</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        window.onload = function() {
+            const restored = loadGameProgress();
+            if (!restored) {
+                startNewGame();
+            } else {
+                renderBoard();
+                updateHistoryBox();
+                updateCapturedPieces(game);
+                updateTimerDisplay();
+            }
+        };
+    </script>
+</body>
+</html>
