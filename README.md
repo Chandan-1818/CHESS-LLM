@@ -1,14 +1,25 @@
 # ♟️ LLM Chess Arena
 
-An AI-powered chess application where users can play chess against Gemini AI in a modern interactive chess environment.
+![HTML](https://img.shields.io/badge/HTML-5-orange)
+![CSS](https://img.shields.io/badge/CSS-3-blue)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow)
+![AI](https://img.shields.io/badge/AI-Gemini-green)
+![Status](https://img.shields.io/badge/Status-Prototype-success)
 
-This project was built using a single HTML file containing:
-- HTML
-- CSS
+An AI-powered futuristic chess application where users can play against Gemini AI in an interactive modern chess environment.
+
+🚀 Built using:
+- HTML5
+- CSS3
 - JavaScript
-- Gemini AI integration
+- Gemini AI
+- Gemini Canvas
 
-The app demonstrates rapid AI-assisted prototyping using Gemini Canvas.
+---
+
+# 🌐 Live Demo
+
+🔗 [Open LLM Chess Arena](https://chess-llm-eosin.vercel.app)
 
 ---
 
@@ -40,12 +51,27 @@ The app demonstrates rapid AI-assisted prototyping using Gemini Canvas.
 ---
 
 ## 🤖 AI Features
-- Gemini AI integration
+- Gemini-powered AI gameplay
 - AI-generated moves
-- AI-based gameplay
 - Adjustable AI difficulty
 - Spectator AI mode
 - Hint system
+- AI move calculations
+
+---
+
+# 📊 Feature Status
+
+| Feature | Status |
+|---------|--------|
+| AI Gameplay | ✅ |
+| Difficulty Modes | ✅ |
+| Theme Switching | ✅ |
+| Responsive UI | ✅ |
+| Hint System | ✅ |
+| Spectator Mode | ✅ |
+| Timer Support | ✅ |
+| Move Highlighting | ✅ |
 
 ---
 
@@ -65,7 +91,9 @@ The app demonstrates rapid AI-assisted prototyping using Gemini Canvas.
 ```bash
 LLM-Chess-Arena/
 │
-└── chess.html
+├── index.html
+├── README.md
+└── SAMPLE-IMAGES/
 ```
 
 This project uses a single-file architecture where all:
@@ -81,27 +109,40 @@ are written inside one file.
 
 ## Method 1 — Direct Run
 
-1. Download the project
+1. Download or clone the project
 2. Open:
 
 ```bash
 index.html
 ```
 
-in any browser.
+in any modern browser.
 
 ---
 
 ## Method 2 — VS Code Live Server
 
 1. Open project folder in VS Code
-2. Install "Live Server" extension
-3. Right click `chess.html`
+2. Install the "Live Server" extension
+3. Right-click `index.html`
 4. Click:
 
 ```bash
 Open with Live Server
 ```
+
+---
+
+# 📸 Screenshots
+
+## Home Screen
+_Add screenshot here_
+
+## Gameplay
+_Add screenshot here_
+
+## AI Move Example
+_Add screenshot here_
 
 ---
 
@@ -113,7 +154,18 @@ Open with Live Server
 4. Gemini calculates the next move
 5. AI response updates the board automatically
 
-The AI acts as the opponent player.
+The AI acts as the opponent player and generates intelligent chess moves dynamically.
+
+---
+
+# 🌐 Deployment
+
+This project is deployed using:
+
+- [Vercel](https://vercel.com)
+
+Live URL:
+https://chess-llm-eosin.vercel.app
 
 ---
 
@@ -130,13 +182,13 @@ Planned future features:
 - Sound effects
 - Voice assistant
 - Cloud save support
+- Mobile app version
 
 ---
 
-
 # 👨‍💻 Author
 
-CHANDAN S
+## CHANDAN S
 
 GitHub:
 https://github.com/Chandan-1818
@@ -189,3 +241,14 @@ This project demonstrates:
 - Modern UI/UX concepts
 
 The entire application was rapidly prototyped using AI-assisted workflows and iterative prompting.
+
+---
+
+# ⭐ Support
+
+If you like this project:
+- Star the repository
+- Share the project
+- Give feedback
+
+🚀 Keep building and experimenting with AI-powered applications!
