@@ -65,7 +65,7 @@ The app demonstrates rapid AI-assisted prototyping using Gemini Canvas.
 ```bash
 LLM-Chess-Arena/
 │
-└── index.html
+└── chess.html
 ```
 
 This project uses a single-file architecture where all:
@@ -96,7 +96,7 @@ in any browser.
 
 1. Open project folder in VS Code
 2. Install "Live Server" extension
-3. Right click `index.html`
+3. Right click `chess.html`
 4. Click:
 
 ```bash
@@ -117,48 +117,6 @@ The AI acts as the opponent player.
 
 ---
 
-# 🌐 Deployment
-
-This project can be deployed easily because it is a static single-file application.
-
-## Deploy On Vercel
-
-1. Upload project to GitHub
-2. Visit:
-
-:contentReference[oaicite:0]{index=0}
-
-3. Import repository
-4. Click Deploy
-
----
-
-## Deploy On Netlify
-
-Visit:
-
-:contentReference[oaicite:1]{index=1}
-
-Then:
-- Drag and drop project folder
-OR
-- Connect GitHub repository
-
----
-
-## Deploy On Render
-
-Visit:
-
-:contentReference[oaicite:2]{index=2}
-
-Create:
-- New Static Site
-- Connect repository
-- Deploy
-
----
-
 # 🔮 Future Improvements
 
 Planned future features:
@@ -175,33 +133,22 @@ Planned future features:
 
 ---
 
-# 📸 Screenshots
-
-Add screenshots here after deployment.
-
-Example:
-
-```md
-![Home Page](screenshot.png)
-```
-
----
 
 # 👨‍💻 Author
 
-YOUR_NAME
+CHANDAN S
 
 GitHub:
-https://github.com/your-username
+https://github.com/Chandan-1818
 
 LinkedIn:
-https://linkedin.com/in/your-profile
+https://www.linkedin.com/in/chandans269
 
 ---
 
 # 📜 License
 
-This project is licensed under the MIT License.
+This project is currently not licensed.
 
 ---
 
