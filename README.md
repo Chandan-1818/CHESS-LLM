@@ -133,18 +133,6 @@ Open with Live Server
 
 ---
 
-# 📸 Screenshots
-
-## Home Screen
-_Add screenshot here_
-
-## Gameplay
-_Add screenshot here_
-
-## AI Move Example
-_Add screenshot here_
-
----
 
 # 🧠 How The AI Works
 
